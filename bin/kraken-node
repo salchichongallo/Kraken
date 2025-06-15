@@ -19,7 +19,7 @@ switch(action) {
         let apkPath = process.argv.slice(3)[0];
         let aaptResult = AAPT.instance().apkInfo(apkPath);
         console.log(`\nLaunch activity: ${aaptResult.apkLaunchActivity}\nPackage: ${aaptResult.apkPackage}\n`);
-        break;
+        // break;
     }
     case 'doctor': {
         const { DependencyChecker } = require('../lib/utils/DependencyChecker');
