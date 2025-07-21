@@ -11,6 +11,5 @@ Then('I see the title', async function () {
 
 Then('I wait and capture the page', async function () {
   await this.deviceClient.browser.pause(3000);
-  const screenshot = await this.deviceClient.browser.takeScreenshot();
-  console.log('Captured screenshot:', screenshot);
+  await this.deviceClient.browser.takeScreenshot();
 });
