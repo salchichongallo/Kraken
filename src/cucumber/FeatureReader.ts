@@ -11,7 +11,7 @@ export class FeatureReader {
 
   public static instance(): FeatureReader {
     if (!FeatureReader.singletonInstance) {
-        FeatureReader.singletonInstance = new FeatureReader();
+      FeatureReader.singletonInstance = new FeatureReader();
     }
 
     return FeatureReader.singletonInstance;
@@ -22,13 +22,12 @@ export class FeatureReader {
     let expectedFeaturesPath = `${currentDirectoryPath}/features`;
     if (!this.fileHelper.pathExists(expectedFeaturesPath)) {
       throw new Error(
-        `ERROR: File or directory ${expectedFeaturesPath} does not exist`
+        `ERROR: File or directory ${expectedFeaturesPath} does not exist`,
       );
     }
 
-    let featuresInPath: string[] = this.fileHelper.featureFilesInPath(
-      expectedFeaturesPath
-    );
+    let featuresInPath: string[] =
+      this.fileHelper.featureFilesInPath(expectedFeaturesPath);
     return featuresInPath.map((featureFileName: string) => {
       return new FeatureFile(`${expectedFeaturesPath}/${featureFileName}`);
     });

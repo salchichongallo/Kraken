@@ -7,7 +7,7 @@ export class AndroidDevice extends Device {
     super(id, model);
   }
 
-  screenSize(): { height: number, width: number } {
+  screenSize(): { height: number; width: number } {
     let orientation: number = this.orientation();
     let size = ADB.instance().deviceScreenSize(this.id);
 
@@ -15,7 +15,8 @@ export class AndroidDevice extends Device {
     let width = orientation == Constants.ANDROID_PORTRAIT ? size[0] : size[1];
 
     return {
-      height, width
+      height,
+      width,
     };
   }
 

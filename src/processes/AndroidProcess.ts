@@ -13,7 +13,11 @@ export class AndroidProcess extends DeviceProcess {
     args.push('--require');
     args.push(`${process.cwd()}/features/mobile/*/*.js`);
     args.push('--require');
-    args.push(FileHelper.instance().pathToAbsolutePath(`${__dirname}/../steps/mobile.js`));
+    args.push(
+      FileHelper.instance().pathToAbsolutePath(
+        `${__dirname}/../steps/mobile.js`,
+      ),
+    );
     this.runWithArgs(args);
   }
 }

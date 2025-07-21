@@ -7,14 +7,13 @@ export class WebDevice extends Device {
   }
 
   static factoryCreate() {
-    return new WebDevice(
-      Device.generateRandomId(), 'Web'
-    );
+    return new WebDevice(Device.generateRandomId(), 'Web');
   }
 
-  screenSize(): { height: number, width: number} {
+  screenSize(): { height: number; width: number } {
     return {
-      height: 0, width: 0
+      height: 0,
+      width: 0,
     };
   }
 

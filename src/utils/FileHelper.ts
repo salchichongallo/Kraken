@@ -1,17 +1,17 @@
-import fs from "fs";
-import fse from "fs-extra";
-import glob from "glob";
-import path from "path";
+import fs from 'fs';
+import fse from 'fs-extra';
+import glob from 'glob';
+import path from 'path';
 import * as Constants from '../utils/Constants';
 
 export class FileHelper {
   private static singletonInstance: FileHelper;
 
-  private constructor() { }
+  private constructor() {}
 
   public static instance(): FileHelper {
     if (!FileHelper.singletonInstance) {
-        FileHelper.singletonInstance = new FileHelper();
+      FileHelper.singletonInstance = new FileHelper();
     }
     return FileHelper.singletonInstance;
   }
@@ -22,10 +22,10 @@ export class FileHelper {
 
   deleteFilesWithGlobPattern(globPattern: string) {
     glob(globPattern, {}, (err: any, files: any) => {
-      if(err) {
+      if (err) {
         throw err;
       }
-      
+
       files.forEach((filePath: any) => {
         this.deleteFileInPath(filePath);
       });
@@ -37,7 +37,7 @@ export class FileHelper {
   }
 
   deleteFileInPathIfExists(path: string) {
-    if(this.pathExists(path)) {
+    if (this.pathExists(path)) {
       this.deleteFileInPath(path);
     }
   }
@@ -56,7 +56,7 @@ export class FileHelper {
   copyFolderToPath(folderPath: string, destinationPath: string) {
     this.createFolderIfDoesNotExist(destinationPath);
 
-    fse.copy(folderPath, destinationPath, (err: any)  => {
+    fse.copy(folderPath, destinationPath, (err: any) => {
       if (err) {
         throw err;
       }

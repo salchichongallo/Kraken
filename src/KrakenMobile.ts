@@ -10,7 +10,7 @@ export class KrakenMobile {
   constructor() {
     this.scenariosQueue = [];
     this.buildScenariosQueue();
-    if(this.usesMultipleApks()) {
+    if (this.usesMultipleApks()) {
       this.checkIfApksArePresentIfRequired();
     } else {
       this.checkIfApkIsPresentIfRequired();
@@ -23,39 +23,45 @@ export class KrakenMobile {
 
   private buildScenariosQueue() {
     let features: FeatureFile[] = FeatureReader.instance().getFeatureFiles();
-    features.forEach((feature) => {
-      this.scenariosQueue.push(
-        new TestScenario(feature, this)
-      );
+    features.forEach(feature => {
+      this.scenariosQueue.push(new TestScenario(feature, this));
     });
   }
 
   private checkIfApkIsPresentIfRequired() {
-    if (!this.requiresMobileInfo()) { return; }
+    if (!this.requiresMobileInfo()) {
+      return;
+    }
     if (!FileHelper.instance().pathExists(Constants.MOBILE_INFO_PATH)) {
       throw new Error(`ERROR: There is no ${Constants.MOBILE_INFO_PATH} file.`);
     }
 
-    let mobileInfo = FileHelper.instance().contentOfFile(Constants.MOBILE_INFO_PATH);
+    let mobileInfo = FileHelper.instance().contentOfFile(
+      Constants.MOBILE_INFO_PATH,
+    );
     let mobileInfoJson = JSON.parse(mobileInfo);
     let apkPath = mobileInfoJson['apk_path'];
     this.checkIfApkPathExist(apkPath);
   }
 
   private checkIfApksArePresentIfRequired() {
-    if (!this.requiresMobileInfo()) { return; }
+    if (!this.requiresMobileInfo()) {
+      return;
+    }
     if (!FileHelper.instance().pathExists(Constants.MOBILE_INFO_PATH)) {
       throw new Error(`ERROR: There is no ${Constants.MOBILE_INFO_PATH} file.`);
     }
 
-    let mobileInfo = FileHelper.instance().contentOfFile(Constants.MOBILE_INFO_PATH);
+    let mobileInfo = FileHelper.instance().contentOfFile(
+      Constants.MOBILE_INFO_PATH,
+    );
     let mobileInfoJson = JSON.parse(mobileInfo);
     let jsonKeys = Object.keys(mobileInfoJson);
-    let userKeys = jsonKeys.filter(
-      (jsonKey) => { return jsonKey.startsWith('@user') }
-    );
+    let userKeys = jsonKeys.filter(jsonKey => {
+      return jsonKey.startsWith('@user');
+    });
     var userValue = null;
-    userKeys.forEach((userKey) => {
+    userKeys.forEach(userKey => {
       userValue = mobileInfoJson[userKey];
       this.checkIfApkPathExist(userValue['apk_path']);
     });
@@ -64,7 +70,7 @@ export class KrakenMobile {
   private checkIfApkPathExist(apkPath: string) {
     if (!apkPath || !FileHelper.instance().pathExists(apkPath)) {
       throw new Error(
-        `ERROR: The specified APK path does not exist make sure the path is correct. APK path ${apkPath}`
+        `ERROR: The specified APK path does not exist make sure the path is correct. APK path ${apkPath}`,
       );
     }
 
@@ -78,15 +84,22 @@ export class KrakenMobile {
       throw new Error(`ERROR: There is no ${Constants.MOBILE_INFO_PATH} file.`);
     }
 
-    let mobileInfo = FileHelper.instance().contentOfFile(Constants.MOBILE_INFO_PATH);
+    let mobileInfo = FileHelper.instance().contentOfFile(
+      Constants.MOBILE_INFO_PATH,
+    );
     let mobileInfoJson = JSON.parse(mobileInfo);
-    return mobileInfoJson['type'] && mobileInfoJson['type'].toLowerCase() == 'multiple';
+    return (
+      mobileInfoJson['type'] &&
+      mobileInfoJson['type'].toLowerCase() == 'multiple'
+    );
   }
 
   private requiresMobileInfo(): Boolean {
-    return this.scenariosQueue.filter((scenario) => {
-      return scenario.sampleMobileDevices().length > 0;
-    }).length > 0;
+    return (
+      this.scenariosQueue.filter(scenario => {
+        return scenario.sampleMobileDevices().length > 0;
+      }).length > 0
+    );
   }
 
   onTestScenarioFinished() {
@@ -94,10 +107,14 @@ export class KrakenMobile {
   }
 
   private executeNextScenario(): any {
-    if(this.scenariosQueue.length <= 0) { return null; }
+    if (this.scenariosQueue.length <= 0) {
+      return null;
+    }
 
     let scenario: any = this.scenariosQueue.shift();
-    if(!scenario) { return null; }
+    if (!scenario) {
+      return null;
+    }
 
     scenario.run();
     return scenario;
