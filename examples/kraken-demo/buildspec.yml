@@ -26,11 +26,8 @@ phases:
     commands:
       - echo "Compilando Kraken..."
       - npm run build
-
-  test:
-    commands:
-      - cd examples/kraken-demo
       - echo "Ejecutando pruebas..."
+      - cd examples/kraken-demo
       - npm run test
 
 artifacts:
