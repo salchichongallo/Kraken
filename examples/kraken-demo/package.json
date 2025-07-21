@@ -1,0 +1,12 @@
+{
+  "private": true,
+  "name": "kraken-demo",
+  "version": "0.1.0",
+  "description": "Proyecto de ejemplo para modernización de software.",
+  "scripts": {
+    "test": "kraken-node run"
+  },
+  "dependencies": {
+    "kraken-node": "file:../../"
+  }
+}
