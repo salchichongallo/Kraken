@@ -1,0 +1,30 @@
+version: 0.2
+
+env:
+  variables:
+    CHROME_PATH: /usr/bin/google-chrome
+    CI: '1'
+    ONLY_WEB: '1'
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 20
+    commands:
+      - echo "Instalando dependencias del sistema (Chrome)..."
+      - apt-get update
+      - apt-get install -y wget unzip xvfb
+      - wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+      - apt install -y ./google-chrome-stable_current_amd64.deb || apt --fix-broken install -y
+      - google-chrome --version
+      - echo "Instalando dependencias de Node.js..."
+      - cd examples/kraken-demo
+      - npm install
+
+  build:
+    commands:
+      - echo "Ejecutando pruebas..."
+      - npm run test
+
+artifacts:
+  files:

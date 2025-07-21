@@ -4,7 +4,15 @@ const { WebClient } = require('kraken-node');
 Before(async function () {
   const browserOptions = process.env.CI
     ? {
-        'goog:chromeOptions': { args: ['--headless'] },
+        'goog:chromeOptions': {
+          args: [
+            '--headless',
+            '--disable-gpu',
+            '--no-sandbox',
+            '--disable-dev-shm-usage',
+            '--disable-setuid-sandbox',
+          ],
+        },
       }
     : {};
   this.deviceClient = new WebClient('chrome', browserOptions, this.userId);

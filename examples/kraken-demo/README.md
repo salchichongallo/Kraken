@@ -28,8 +28,8 @@ Navegue al directorio de esta aplicación a través de la terminal y ejecute:
 
 ### Pipeline de integración continua
 
-Defina la variable de entorno `CI=1` durante el pipeline para ejecutar las pruebas en modo headless.
+Defina las variables de entorno `CI=1` y `ONLY_WEB=1` durante el pipeline para ejecutar las pruebas en modo headless.
 
 ```sh
-CI=1 npm run test
+CI=1 ONLY_WEB=1 npm run test
 ```
