@@ -24,6 +24,8 @@ phases:
 
   build:
     commands:
+      - ls
+      - pwd
       - echo "Compilando Kraken..."
       - npm run build
       - echo "Ejecutando pruebas..."
