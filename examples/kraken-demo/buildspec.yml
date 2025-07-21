@@ -17,19 +17,17 @@ phases:
       - wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
       - apt install -y ./google-chrome-stable_current_amd64.deb || apt --fix-broken install -y
       - google-chrome --version
-      - echo "Instalando dependencias de Node.js..."
+      - echo "Instalando dependencias de Kraken..."
       - npm install
+      - echo "Compilando Kraken..."
+      - npm run build
       - cd examples/kraken-demo
+      - echo "Instalando dependencias de aplicación..."
       - npm install
 
   build:
     commands:
-      - ls
-      - pwd
-      - echo "Compilando Kraken..."
-      - npm run build
       - echo "Ejecutando pruebas..."
-      - cd examples/kraken-demo
       - npm run test
 
 artifacts:
