@@ -14,6 +14,9 @@ export class ADB {
   }
 
   connectedDevices(): AndroidDevice[] {
+    if (process.env.ONLY_WEB) {
+      return [];
+    }
     let devices: AndroidDevice[] = [];
     const adbDevices: string = execSync('adb devices -l').toString();
     adbDevices.split('\n').forEach((line: string) => {
