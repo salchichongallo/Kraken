@@ -18,11 +18,18 @@ phases:
       - apt install -y ./google-chrome-stable_current_amd64.deb || apt --fix-broken install -y
       - google-chrome --version
       - echo "Instalando dependencias de Node.js..."
+      - npm install
       - cd examples/kraken-demo
       - npm install
 
   build:
     commands:
+      - echo "Compilando Kraken..."
+      - npm run build
+
+  test:
+    commands:
+      - cd examples/kraken-demo
       - echo "Ejecutando pruebas..."
       - npm run test
 
