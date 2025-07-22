@@ -29,6 +29,12 @@ phases:
     commands:
       - echo "Ejecutando pruebas..."
       - npm run test
+      - echo "Renombrando carpeta de reporte con timestamp..."
+      - ORIGINAL_DIR=$(find reports -mindepth 1 -maxdepth 1 -type d | head -n 1)
+      - TIMESTAMP=$(date +"kraken-report-%Y-%m-%d_at_%H-%M-%S")
+      - mv "$ORIGINAL_DIR" "reports/$TIMESTAMP"
 
 artifacts:
   files:
+    - '**/*'
+  base-directory: reports
