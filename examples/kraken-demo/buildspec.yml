@@ -43,4 +43,4 @@ phases:
 artifacts:
   files:
     - '**/*'
-  base-directory: reports/output
+  base-directory: examples/kraken-demo/reports/output
