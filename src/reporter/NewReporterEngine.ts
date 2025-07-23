@@ -1,5 +1,5 @@
 import { IReporter } from "./IReporter";
-import { IFileFormatter, IFormatter } from "./formatter/IFormatter";
+import { IFormatter } from "./formatter/IFormatter";
 import { IStorage } from "./storage/IStorage";
 import { ReportGenerator } from "./generator/ReportGenerator";
 import { TestScenario } from "../TestScenario";
@@ -20,11 +20,8 @@ export class NewReporterEngine implements IReporter {
         const filePath = this.storage.getPath({
             destination: `${scenario.executionId}/index.pdf`,
         });
-
-        if ("formatToFile" in this.formatter) {
-            (this.formatter as IFileFormatter).formatToFile(filePath, data);
-        } else {
-            const content = (this.formatter as IFormatter).format(data);
+        const content = this.formatter.format(data, { filePath });
+        if (typeof content === 'string') {
             this.storage.save(content, { destination: `${scenario.executionId}/index.html` });
         }
     }

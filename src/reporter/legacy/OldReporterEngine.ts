@@ -6,6 +6,9 @@ import * as Constants from '../../utils/Constants';
 import { FileHelper } from "../../utils/FileHelper";
 
 export class OldReporterEngine implements IReporter {
+    private readonly PASSED = 'passed';
+    private readonly FAILED = 'failed';
+
     createReport(scenario: TestScenario): void {
         this.saveExecutionDevicesList(scenario);
         this.createFolderStructure(scenario);
@@ -33,7 +36,7 @@ export class OldReporterEngine implements IReporter {
 
     private generateGeneralReport(scenario: TestScenario): void {
         const devicesReport = this.reportByDevices(scenario);
-        const featuresReport = this.featuresFromReportByDevices(devicesReport);
+        const featuresReport = this.feturesFromReportByDevices(devicesReport);
         const dataHash = this.featureByNodesAndLinks(featuresReport);
 
         const dataPath = `${Constants.REPORT_PATH}/${scenario.executionId}/assets/js/${Constants.D3_DATA_FILE_NAME}`;
@@ -97,5 +100,180 @@ export class OldReporterEngine implements IReporter {
         });
 
         return devicesReport;
+    }
+
+    private feturesFromReportByDevices(reportByDevices: any) {
+        let features: any = {}
+        Object.keys(reportByDevices).forEach((key: any) => {
+            let report = reportByDevices[key];
+            report.forEach((feature: any) => {
+                if (features[feature.id] == null || features[feature.id] == undefined) {
+                    features[feature.id] = {}
+                }
+
+                if ((features[feature.id].name == null || features[feature.id].name == undefined) && feature.name) {
+                    features[feature.id].name = feature.name
+                }
+
+                if (features[feature.id].devices == null || features[feature.id].devices == undefined) {
+                    features[feature.id].devices = {}
+                }
+
+                if (feature.elements && feature.elements.length > 0) {
+                    features[feature.id].devices[key] = []
+                    if (feature.elements[0].steps != null || feature.elements[0].steps != undefined) {
+                        let failed = false
+                        feature.elements[0].steps.forEach((step: any) => {
+                            if (failed) { return; }
+
+                            failed = step.result.status != this.PASSED
+                            let image = null;
+                            if (step.embeddings != null && step.embeddings != undefined && step.embeddings.length > 0) {
+                                image = step.embeddings[0].data
+                            }
+                            features[feature.id].devices[key].push({
+                                name: `${step.keyword} ${step.name || ''}`,
+                                duration: step.result.duration,
+                                image: image,
+                                device_model: feature.device_model,
+                                status: failed ? this.FAILED : this.PASSED
+                            });
+                        });
+                    }
+                }
+            });
+        });
+        return features;
+    }
+
+    private featureByNodesAndLinks(reportByDevices: any): any {
+        let features: any = [];
+        Object.keys(reportByDevices).forEach((key: any) => {
+            let feature = reportByDevices[key];
+            if (feature.devices != null && feature.devices != undefined) {
+                features.push(
+                    this.nodesAndLinks(feature.devices, feature.name)
+                );
+            }
+        });
+        return features;
+    }
+
+    private nodesAndLinks(featureReport: any, featureName: any): any {
+        let lastNodeId = 0;
+        let nodes = [{ name: "", id: "empty", image: null }];
+        let signalHash: any = {};
+        let links: any = [];
+        Object.keys(featureReport).forEach((key: any) => {
+            let steps = featureReport[key];
+            let comingFromSignal = false;
+            let lastSignal = -1;
+            steps.forEach((step: any, index: number) => {
+                let nodeId = lastNodeId + 1;
+
+                if (this.isReadSignal(step.name) && step.status == this.PASSED) {
+                    let signal = this.signalContent(step.name);
+                    let alreadyCreatedSignal = signalHash[signal] ? true : false
+                    signalHash[signal] = alreadyCreatedSignal ? signalHash[signal] : { id: `${nodeId}`, receiver: key }
+                    let node = {
+                        name: `Signal: ${signal}, Receiver: ${step.device_model}`,
+                        id: signalHash[signal].id, image: null, status: step.status
+                    }
+                    if (alreadyCreatedSignal) {
+                        let entry = nodes.filter((node: any) => {
+                            return node.id == signalHash[signal].id
+                        })[0];
+                        if (entry != null || entry != undefined) {
+                            entry.name = `Signal: ${signal}, Receiver: ${step.device_model}`
+                        }
+                    }
+                    let source = (comingFromSignal ? lastSignal : (index == 0 ? 0 : lastNodeId))
+                    let link = {
+                        source: source,
+                        target: parseInt(signalHash[signal].id),
+                        value: 1,
+                        owner: key,
+                        owner_model: step.device_model
+                    }
+                    if (!alreadyCreatedSignal) {
+                        nodes.push(node);
+                        lastNodeId += 1;
+                    }
+                    links.push(link);
+                    lastSignal = parseInt(signalHash[signal].id)
+                    comingFromSignal = true
+                } else if (this.isWriteSignal(step.name) && step.status == this.PASSED) {
+                    let signal = this.signalContent(step.name);
+                    let receiver = this.signalReceiver(step.name);
+                    let alreadyCreatedSignal = signalHash[signal] ? true : false
+                    signalHash[signal] = alreadyCreatedSignal ? signalHash[signal] : { id: `${nodeId}`, receiver: receiver }
+                    let node = {
+                        name: step.name, id: signalHash[signal].id,
+                        image: null, status: step.status
+                    }
+                    let source = (comingFromSignal ? lastSignal : (index == 0 ? 0 : lastNodeId))
+                    let link = {
+                        source: source,
+                        target: parseInt(signalHash[signal].id),
+                        value: 1,
+                        owner: key,
+                        owner_model: step.device_model
+                    }
+                    if (!alreadyCreatedSignal) {
+                        nodes.push(node);
+                        lastNodeId += 1;
+                    }
+                    links.push(link);
+                    lastSignal = parseInt(signalHash[signal].id)
+                    comingFromSignal = true
+                } else {
+                    let node = {
+                        name: step.name, id: `${nodeId}`,
+                        image: step.image, status: step.status
+                    }
+                    let source = (comingFromSignal ? lastSignal : (index == 0 ? 0 : lastNodeId))
+                    let link = {
+                        source: source,
+                        target: nodeId,
+                        value: 1,
+                        owner: key,
+                        owner_model: step.device_model
+                    }
+                    nodes.push(node);
+                    links.push(link);
+                    lastNodeId += 1;
+                    comingFromSignal = false
+                }
+            });
+        });
+        return {
+            name: featureName,
+            nodes: nodes,
+            links: links
+        };
+    }
+
+    private isReadSignal(step: String): boolean {
+        return step.toLowerCase().indexOf("i send a signal to user") != -1;
+    }
+
+    private isWriteSignal(step: String): boolean {
+        return step.toLowerCase().indexOf("i wait for a signal containing") != -1;
+    }
+
+    private signalContent(step: string): any {
+        let found = step.match(/"([^\"]*)"/);
+        if (found && found.length > 0) {
+            return found[0].trim()
+        }
+        return null;
+    }
+
+    private signalReceiver(step: string): any {
+        let found = step.match(/(\d+)/);
+        if (found && found.length > 0) {
+            return found[0].trim()
+        }
+        return null;
     }
 }
