@@ -11,11 +11,13 @@ import * as Constants from './utils/Constants';
 import { FileHelper } from './utils/FileHelper';
 import { Reporter } from './reports/Reporter';
 import { KrakenMobile } from './KrakenMobile';
+import { ReporterEngineFacade } from './reporter/ReporterEngineFacade';
+import { IReporter } from './reporter/IReporter';
 const { randomBytes } = require('crypto');
 
 export class TestScenario {
   featureFile: FeatureFile;
-  reporter: Reporter;
+  reporter: IReporter;
   processes: DeviceProcess[];
   krakenApp: KrakenMobile;
   executionId: string;
@@ -24,7 +26,7 @@ export class TestScenario {
   constructor(featureFile: FeatureFile, krakenApp: KrakenMobile) { 
     this.featureFile = featureFile;
     this.krakenApp = krakenApp;
-    this.reporter = new Reporter(this);
+    this.reporter = new ReporterEngineFacade();
     this.processes = [];
     this.executionId = randomBytes(10).toString('hex');
     this.devices = [];
@@ -56,7 +58,7 @@ export class TestScenario {
       process.registerProcessToDirectory();
       this.processes.push(process);
     });
-    this.reporter.createReportFolderRequirements();
+    this.reporter.createReport(this);
   }
 
   private execute() {
@@ -69,7 +71,7 @@ export class TestScenario {
   private afterExecute() {
     this.deleteSupportFilesAndDirectories();
     this.notifyScenarioFinished();
-    this.reporter.saveReport();
+    this.reporter.saveReport(this);
   }
 
   private notifyScenarioFinished() {
