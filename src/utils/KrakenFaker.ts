@@ -16,29 +16,29 @@ export class KrakenFaker {
 
   generateValueForKey(key: string): string {
     let value = '';
-    if(key.startsWith('$name')) {
+    if (key.startsWith('$name')) {
       value = this.generateName();
-    } else if(key.startsWith('$number')) {
+    } else if (key.startsWith('$number')) {
       value = this.generateNumber();
-    } else if(key.startsWith('$email')) {
+    } else if (key.startsWith('$email')) {
       value = this.generateEmail();
-    } else if(key.startsWith('$string')) {
+    } else if (key.startsWith('$string')) {
       value = this.generateString();
-    } else if(key.startsWith('$date')) {
+    } else if (key.startsWith('$date')) {
       value = this.generateDate();
-    } else if(key.startsWith('$url')) {
+    } else if (key.startsWith('$url')) {
       value = this.generateUrl();
     } else {
       throw new Error(`ERROR: Faker key not supported.`);
     }
-    this.saveKeyValueInDictionary(key, value)
+    this.saveKeyValueInDictionary(key, value);
     return value;
   }
 
   reuseValueForKey(key: string): string {
     let dictionary = this.dictionaryJson();
     let value = dictionary[key.substring(1)];
-    if(value == null || value == undefined) {
+    if (value == null || value == undefined) {
       throw new Error(`ERROR: Key does not exist.`);
     }
 
@@ -48,7 +48,8 @@ export class KrakenFaker {
   private dictionaryJson() {
     FileHelper.instance().createFileIfDoesNotExist(Constants.DICTIONARY_PATH);
 
-    let fileContent = FileHelper.instance().contentOfFile(Constants.DICTIONARY_PATH) || '{}';
+    let fileContent =
+      FileHelper.instance().contentOfFile(Constants.DICTIONARY_PATH) || '{}';
     return JSON.parse(fileContent);
   }
 
@@ -56,7 +57,8 @@ export class KrakenFaker {
     let dictionary = this.dictionaryJson();
     dictionary[key] = value;
     FileHelper.instance().writeTextToFile(
-      JSON.stringify(dictionary), Constants.DICTIONARY_PATH
+      JSON.stringify(dictionary),
+      Constants.DICTIONARY_PATH,
     );
   }
 
@@ -83,12 +85,12 @@ export class KrakenFaker {
   private generateUrl(): string {
     return faker.internet.url();
   }
- 
+
   static stringIsAFaker(string: String): boolean {
-    return string.startsWith("$");
+    return string.startsWith('$');
   }
 
   static stringIsAFakerReuse(string: String): boolean {
-    return string.startsWith("$$");
+    return string.startsWith('$$');
   }
 }

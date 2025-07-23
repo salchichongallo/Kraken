@@ -3,7 +3,7 @@ import { ADB } from './utils/ADB';
 import { AndroidDevice } from './devices/AndroidDevice';
 import { WebDevice } from './devices/WebDevice';
 import { Device } from './devices/Device';
-import { exec, execSync } from "child_process";
+import { exec, execSync } from 'child_process';
 import { AndroidProcess } from './processes/AndroidProcess';
 import { WebProcess } from './processes/WebProcess';
 import { DeviceProcess } from './processes/DeviceProcess';
@@ -23,7 +23,7 @@ export class TestScenario {
   executionId: string;
   devices: Device[];
 
-  constructor(featureFile: FeatureFile, krakenApp: KrakenMobile) { 
+  constructor(featureFile: FeatureFile, krakenApp: KrakenMobile) {
     this.featureFile = featureFile;
     this.krakenApp = krakenApp;
     this.reporter = new ReporterEngineFacade();
@@ -35,8 +35,8 @@ export class TestScenario {
   public async run() {
     if (!this.featureFile.hasRightSyntax()) {
       throw new Error(
-        `ERROR: Verify feature file ${this.featureFile.filePath} has one unique @user tag for each scenario`
-        );
+        `ERROR: Verify feature file ${this.featureFile.filePath} has one unique @user tag for each scenario`,
+      );
     }
 
     this.beforeExecute();
@@ -52,7 +52,9 @@ export class TestScenario {
     this.devices = this.sampleDevices();
     var interval = 1000;
     this.devices.forEach((device: AndroidDevice, index: number) => {
-      if (!device) { return; }
+      if (!device) {
+        return;
+      }
 
       let process = this.processForUserIdInDevice(index + 1, device);
       process.registerProcessToDirectory();
@@ -62,9 +64,9 @@ export class TestScenario {
   }
 
   private execute() {
-    this.processes.forEach((process) => {
+    this.processes.forEach(process => {
       process.run();
-      this.pause(5000)
+      this.pause(5000);
     });
   }
 
@@ -82,19 +84,23 @@ export class TestScenario {
     FileHelper.instance().deleteFileInPathIfExists(Constants.DIRECTORY_PATH);
     FileHelper.instance().deleteFileInPathIfExists(Constants.DICTIONARY_PATH);
     for (let state in Constants.PROCESS_STATE_FILE_PATH) {
-      FileHelper.instance().deleteFileInPathIfExists(Constants.PROCESS_STATE_FILE_PATH[`${state}`]);
+      FileHelper.instance().deleteFileInPathIfExists(
+        Constants.PROCESS_STATE_FILE_PATH[`${state}`],
+      );
     }
   }
 
   private deleteAllInboxes() {
-    FileHelper.instance().deleteFilesWithGlobPattern(`${process.cwd()}/${Constants.KRAKEN_DIRECTORY}/.*_${Constants.INBOX_FILE_NAME}`);
+    FileHelper.instance().deleteFilesWithGlobPattern(
+      `${process.cwd()}/${Constants.KRAKEN_DIRECTORY}/.*_${Constants.INBOX_FILE_NAME}`,
+    );
   }
 
   processForUserIdInDevice(userId: number, device: Device) {
     let process: any = null;
-    if(device instanceof AndroidDevice) {
+    if (device instanceof AndroidDevice) {
       process = new AndroidProcess(userId, device, this);
-    } else if(device instanceof WebDevice) {
+    } else if (device instanceof WebDevice) {
       process = new WebProcess(userId, device, this);
     } else {
       throw new Error('ERROR: Platform not supported');
@@ -106,9 +112,12 @@ export class TestScenario {
     let sample: any[] = [];
     let mobileDevices: AndroidDevice[] = this.sampleMobileDevices();
     let webDevices: WebDevice[] = this.sampleWebDevices();
-    this.featureFile.requiredDevicesInfo().forEach((deviceInfo) => {
-      let userId: number = Number(deviceInfo.userId); 
-      let device = deviceInfo.systemType === '@web' ? webDevices.shift() : mobileDevices.shift();
+    this.featureFile.requiredDevicesInfo().forEach(deviceInfo => {
+      let userId: number = Number(deviceInfo.userId);
+      let device =
+        deviceInfo.systemType === '@web'
+          ? webDevices.shift()
+          : mobileDevices.shift();
       sample[userId - 1] = device;
     });
     return sample;
@@ -116,41 +125,57 @@ export class TestScenario {
 
   sampleMobileDevices(): AndroidDevice[] {
     let mobileDevices: AndroidDevice[] = ADB.instance().connectedDevices();
-    let numberOfRequiredMobileDevices =  this.featureFile.numberOfRequiredMobileDevices();
+    let numberOfRequiredMobileDevices =
+      this.featureFile.numberOfRequiredMobileDevices();
     return mobileDevices.slice(0, numberOfRequiredMobileDevices);
   }
 
   sampleWebDevices(): WebDevice[] {
-    let numberOfRequiredWebDevices =  this.featureFile.numberOfRequiredWebDevices();
+    let numberOfRequiredWebDevices =
+      this.featureFile.numberOfRequiredWebDevices();
     let webDevices: WebDevice[] = [];
-    for(var i = 0; i < numberOfRequiredWebDevices; i++) {
-      webDevices.push(WebDevice.factoryCreate())
+    for (var i = 0; i < numberOfRequiredWebDevices; i++) {
+      webDevices.push(WebDevice.factoryCreate());
     }
     return webDevices.slice(0, numberOfRequiredWebDevices);
   }
 
   private allRegiresteredDevicesFinished(): Boolean {
-    let registered_ids = DeviceProcess.registeredProcessIds();    
-    let finished_ids = DeviceProcess.processesInState(Constants.PROCESS_STATES.finished);
-    return registered_ids.filter((registered_id) => {
-      return !finished_ids.includes(registered_id);
-    }).length <= 0;
+    let registered_ids = DeviceProcess.registeredProcessIds();
+    let finished_ids = DeviceProcess.processesInState(
+      Constants.PROCESS_STATES.finished,
+    );
+    return (
+      registered_ids.filter(registered_id => {
+        return !finished_ids.includes(registered_id);
+      }).length <= 0
+    );
   }
 
   private async allProcessesFinished() {
-    return new Promise(resolve => this.waitForAllProcessesToFinishOrTimeout(Date.now(), resolve));
+    return new Promise(resolve =>
+      this.waitForAllProcessesToFinishOrTimeout(Date.now(), resolve),
+    );
   }
 
   private waitForAllProcessesToFinishOrTimeout(startTime: any, resolve: any) {
     if (this.allRegiresteredDevicesFinished()) {
       resolve();
     } else if (
-      (Date.now() - startTime) >= Constants.DEFAULT_PROCESS_TIMEOUT_SECONDS
+      Date.now() - startTime >=
+      Constants.DEFAULT_PROCESS_TIMEOUT_SECONDS
     ) {
-      throw new Error(`ERROR: Timeout, a process took more time than expected.`);
+      throw new Error(
+        `ERROR: Timeout, a process took more time than expected.`,
+      );
     } else {
       setTimeout(
-        this.waitForAllProcessesToFinishOrTimeout.bind(this, startTime, resolve), 1000
+        this.waitForAllProcessesToFinishOrTimeout.bind(
+          this,
+          startTime,
+          resolve,
+        ),
+        1000,
       );
     }
   }

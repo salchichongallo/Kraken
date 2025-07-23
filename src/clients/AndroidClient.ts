@@ -1,5 +1,5 @@
 import { remote } from 'webdriverio';
-import { exec } from "child_process";
+import { exec } from 'child_process';
 import { Client } from './Client';
 const portfinder = require('portfinder');
 
@@ -15,7 +15,14 @@ export class AndroidClient extends Client {
   private defaultClientTimout: number;
   private clientStartingTime: any;
 
-  constructor(deviceId: string, app: string, appPackage: string, appActivity: string, otherParams?: any, id?: string) {
+  constructor(
+    deviceId: string,
+    app: string,
+    appPackage: string,
+    appActivity: string,
+    otherParams?: any,
+    id?: string,
+  ) {
     super(id);
     this.defaultClientTimout = 60000;
     this.app = app;
@@ -25,7 +32,7 @@ export class AndroidClient extends Client {
     this.otherParams = otherParams;
   }
 
-  async start(): Promise<any>{
+  async start(): Promise<any> {
     this.createInbox();
     this.port = await this.availablePort();
     this.proc = exec(`appium -p ${this.port}`);
@@ -43,24 +50,24 @@ export class AndroidClient extends Client {
 
   // Helpers
   generaOpts() {
-      return {
-        path: '/wd/hub',
-        port: this.port,
-        capabilities: this.capabilities()
-      }
-  };
+    return {
+      path: '/wd/hub',
+      port: this.port,
+      capabilities: this.capabilities(),
+    };
+  }
 
   private capabilities(): any {
     return {
-      platformName: "Android",
-      deviceName: "Android Emulator",
+      platformName: 'Android',
+      deviceName: 'Android Emulator',
       app: this.app,
       appPackage: this.appPackage,
       appActivity: this.appActivity,
-      automationName: "UiAutomator2",
+      automationName: 'UiAutomator2',
       udid: this.deviceId,
-      ...this.otherParams
-    }
+      ...this.otherParams,
+    };
   }
 
   async availablePort() {
@@ -71,33 +78,30 @@ export class AndroidClient extends Client {
 
   private async startProcess() {
     console.log(`Starting process on device: ${this.id}`);
-    this.client = await remote(
-      this.generaOpts(), (client: any) => {
-        client.readSignal = this.readSignal.bind(this);
-        client.writeSignal = this.writeSignal.bind(this);
-        client.lastSignal = this.inboxLastSignal.bind(this);
-        return client;
-      }
-    );
+    this.client = await remote(this.generaOpts(), (client: any) => {
+      client.readSignal = this.readSignal.bind(this);
+      client.writeSignal = this.writeSignal.bind(this);
+      client.lastSignal = this.inboxLastSignal.bind(this);
+      return client;
+    });
   }
 
   private waitForClientToStart(resolve: any, reject: any) {
-    if(this.client) {
+    if (this.client) {
       resolve(this.client);
-    } else if(
-      (Date.now() - this.clientStartingTime) >= this.defaultClientTimout
+    } else if (
+      Date.now() - this.clientStartingTime >=
+      this.defaultClientTimout
     ) {
-      reject(new Error("Timeout"));
+      reject(new Error('Timeout'));
     } else {
-      setTimeout(
-        this.waitForClientToStart.bind(this, resolve, reject), 2000
-      );
+      setTimeout(this.waitForClientToStart.bind(this, resolve, reject), 2000);
     }
   }
 
   private onStdout(data: any) {
     let dataText: string = data.toString();
-    if(dataText.includes(`started on 0.0.0.0:${this.port}`)) {
+    if (dataText.includes(`started on 0.0.0.0:${this.port}`)) {
       this.startProcess();
     }
   }

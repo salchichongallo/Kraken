@@ -1,0 +1,46 @@
+version: 0.2
+
+env:
+  variables:
+    CHROME_PATH: /usr/bin/google-chrome
+    CI: '1'
+    ONLY_WEB: '1'
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 20
+    commands:
+      - echo "Instalando dependencias del sistema (Chrome)..."
+      - apt-get update -qq
+      - apt-get install -y -qq wget unzip xvfb
+      - wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+      - apt install -qq -y ./google-chrome-stable_current_amd64.deb || apt -qq --fix-broken install -y
+      - google-chrome --version
+      - echo "Instalando dependencias de Kraken..."
+      - npm install
+      - echo "Compilando Kraken..."
+      - npm run build
+      - cd examples/kraken-demo
+      - echo "Instalando dependencias de aplicación..."
+      - npm install
+
+  build:
+    commands:
+      - echo "Ejecutando pruebas..."
+      - npm run test
+      - echo "Renombrando carpeta de reporte con timestamp..."
+      - ORIGINAL_DIR=$(find reports -mindepth 1 -maxdepth 1 -type d | head -n 1)
+      - TIMESTAMP=$(date +"kraken-report-%Y-%m-%d_at_%H-%M-%S")
+      - RENAMED_DIR="reports/$TIMESTAMP"
+      - mv "$ORIGINAL_DIR" "$RENAMED_DIR"
+      - echo "Copiando carpeta renombrada a reports/output/ para subir como artefacto..."
+      - mkdir -p reports/output
+      - cp -r "$RENAMED_DIR" reports/output/
+      - echo "Contenido final en reports/output/:"
+      - ls -l reports/output
+
+artifacts:
+  files:
+    - '**/*'
+  base-directory: examples/kraken-demo/reports/output
