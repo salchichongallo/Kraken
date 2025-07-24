@@ -31,12 +31,19 @@ export abstract class DeviceProcess implements DeviceProcessInterface {
   }
 
   protected baseArgs(): string[] {
-    return [
+    const args = [
       `${__dirname}/../../bin/cucumber`,
       '-f',
       'pretty',
-      '-f',
-      `json:${Constants.REPORT_PATH}/${this.testScenario.executionId}/${this.device.id}/${Constants.FILE_REPORT_NAME}`,
+    ]
+    const isNew = process.env.NEW_REPORTER === '1';
+    if (!isNew) {
+      args.push(
+        '-f',
+        `json:${Constants.REPORT_PATH}/${this.testScenario.executionId}/${this.device.id}/${Constants.FILE_REPORT_NAME}`,
+      );
+    }
+    args.push(
       `${this.testScenario.featureFile.filePath}`,
       '--tags',
       `@user${this.id}`,
@@ -44,7 +51,8 @@ export abstract class DeviceProcess implements DeviceProcessInterface {
       this.worldParams(),
       '--require',
       FileHelper.instance().pathToAbsolutePath(`${__dirname}/../steps/both.js`),
-    ];
+    );
+    return args;
   }
 
   private worldParams(): string {

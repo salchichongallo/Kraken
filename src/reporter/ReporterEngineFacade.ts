@@ -19,7 +19,7 @@ export class ReporterEngineFacade implements IReporter {
       this.legacy = new LegacyReporterBridge(new Reporter(scenario));
     }
 
-    private useModern = false;
+    private useModern = process.env.NEW_REPORTER === '1';
 
     createReport(scenario: TestScenario): void {
         this.getActive().createReport(scenario);
