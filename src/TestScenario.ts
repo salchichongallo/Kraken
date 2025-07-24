@@ -26,7 +26,7 @@ export class TestScenario {
   constructor(featureFile: FeatureFile, krakenApp: KrakenMobile) {
     this.featureFile = featureFile;
     this.krakenApp = krakenApp;
-    this.reporter = new ReporterEngineFacade();
+    this.reporter = new ReporterEngineFacade(this);
     this.processes = [];
     this.executionId = randomBytes(10).toString('hex');
     this.devices = [];
