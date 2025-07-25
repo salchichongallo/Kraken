@@ -31,4 +31,9 @@ export class FileSystemStorage implements IStorage {
     getPath(options: { destination: string }): string {
         return path.resolve(this.basePath, options.destination);
     }
+
+    ensureFolder(relativePath: string): void {
+        const fullPath = path.resolve(this.basePath, relativePath);
+        fs.mkdirSync(fullPath, { recursive: true });
+    }
 }
