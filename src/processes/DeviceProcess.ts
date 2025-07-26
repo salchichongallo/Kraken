@@ -31,28 +31,15 @@ export abstract class DeviceProcess implements DeviceProcessInterface {
   }
 
   protected baseArgs(): string[] {
-    const args = [
+    return [
       `${__dirname}/../../bin/cucumber`,
-      '-f',
-      'pretty',
-    ]
-    const isNew = process.env.NEW_REPORTER === '1';
-    if (!isNew) {
-      args.push(
-        '-f',
-        `json:${Constants.REPORT_PATH}/${this.testScenario.executionId}/${this.device.id}/${Constants.FILE_REPORT_NAME}`,
-      );
-    }
-    args.push(
+      '-f', 'pretty',
+      '-f', `json:${Constants.REPORT_PATH}/${this.testScenario.executionId}/${this.device.id}/${Constants.FILE_REPORT_NAME}`,
       `${this.testScenario.featureFile.filePath}`,
-      '--tags',
-      `@user${this.id}`,
-      '--world-parameters',
-      this.worldParams(),
-      '--require',
-      FileHelper.instance().pathToAbsolutePath(`${__dirname}/../steps/both.js`),
-    );
-    return args;
+      '--tags', `@user${this.id}`,
+      '--world-parameters', this.worldParams(),
+      '--require', FileHelper.instance().pathToAbsolutePath(`${__dirname}/../steps/both.js`)
+    ];
   }
 
   private worldParams(): string {
