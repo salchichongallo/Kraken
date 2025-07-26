@@ -5,6 +5,7 @@
 Kraken is an open source automated android and web E2E testing tool that supports and validates scenarios that involve the inter-communication between two or more users. It works in a Black Box manner meaning that it is not required to have access to the source code of the application but instead it can be run with the APK (Android package file format) and web page URL. Kraken uses signaling for coordinating the communication between the devices using a file based protocol.
 
 # Video
+
 [![krakenThumbnail](./reporter/assets/images/krakenThumbnail.jpg)](https://youtu.be/gf95lafrD8M)
 
 **Kraken is partially supported by a Google Latin America Research Award (LARA) 2018 - 2021**
@@ -86,7 +87,7 @@ npx kraken-node run
 
 ### Syntax
 
-In Kraken each feature is a test and each scenario within a feature is a test case that is run in a device. Each device is identified as an user and numbered from 1 to N. Ex: @user1, @user2, @user3. Also you each user should specify what type of device is going to execute the scenario, for web testing use @web and for mobile testing use @mobile. 
+In Kraken each feature is a test and each scenario within a feature is a test case that is run in a device. Each device is identified as an user and numbered from 1 to N. Ex: @user1, @user2, @user3. Also you each user should specify what type of device is going to execute the scenario, for web testing use @web and for mobile testing use @mobile.
 
 After identifying what number each device has, you can write your test case giving each scenario the tag of a given device like so:
 
@@ -146,7 +147,7 @@ Writes signal content to a device inbox.
 
 ### Creating new steps
 
-To create new steps it depends the platform that is going to implement the step, in the case of Mobile testing you should add your custom steps on the ***features/mobile/step_definitions/step.js*** file. On the other hand, when adding a custom step for Web testing you should add the step in the file ***features/web/step_definitions/step.js.***
+To create new steps it depends the platform that is going to implement the step, in the case of Mobile testing you should add your custom steps on the **_features/mobile/step_definitions/step.js_** file. On the other hand, when adding a custom step for Web testing you should add the step in the file **_features/web/step_definitions/step.js._**
 
 Take into account that Kraken uses **Webdriverio** for executing mobile and web steps so it is necessary to follow it's syntax, you can learn more about **Webdriverio** at the following [link](https://webdriver.io/docs/selectors)
 
@@ -158,36 +159,36 @@ To see a list of all mobile steps available in Kraken, visit the following [lin
 
 ### Specifying Android's APK file for the test
 
-In case you are going to execute mobile testing with or instead of web testing you should specify an APK file that will be installed on the phone available for testing, also Appium requires the name of the package and main activity of the app under test. To achieve this Kraken creates a file named *mobile.json* on the root directory where you can specify this information.
+In case you are going to execute mobile testing with or instead of web testing you should specify an APK file that will be installed on the phone available for testing, also Appium requires the name of the package and main activity of the app under test. To achieve this Kraken creates a file named _mobile.json_ on the root directory where you can specify this information.
 
 ```json
 {
-    "type": "singular",
+  "type": "singular",
+  "apk_path": "<APK_PATH>",
+  "apk_package": "<APK_PACKAGE>",
+  "apk_launch_activity": "<APK_LAUNCH_ACTIVITY>"
+}
+```
+
+To run different APK files on every device you only need to change the _mobile.json_ content to match the following format:
+
+```json
+{
+  "type": "multiple",
+  "@user1": {
     "apk_path": "<APK_PATH>",
     "apk_package": "<APK_PACKAGE>",
     "apk_launch_activity": "<APK_LAUNCH_ACTIVITY>"
+  },
+  "@user2": {
+    "apk_path": "<APK_PATH>",
+    "apk_package": "<APK_PACKAGE>",
+    "apk_launch_activity": "<APK_LAUNCH_ACTIVITY>"
+  }
 }
 ```
 
-To run different APK files on every device you only need to change the *mobile.json* content to match the following format:
-
-```json
-{
-    "type": "multiple",
-    "@user1": {
-      "apk_path": "<APK_PATH>",
-      "apk_package": "<APK_PACKAGE>",
-      "apk_launch_activity": "<APK_LAUNCH_ACTIVITY>"
-    },
-    "@user2": {
-      "apk_path": "<APK_PATH>",
-      "apk_package": "<APK_PACKAGE>",
-      "apk_launch_activity": "<APK_LAUNCH_ACTIVITY>"
-    }
-}
-```
-
-Notice that the content of every key *@userN* where *N* is the ID of the user, specifies the APK information that will run each user.
+Notice that the content of every key _@userN_ where _N_ is the ID of the user, specifies the APK information that will run each user.
 
 ### Finding your apps package and launch activity name
 
@@ -263,7 +264,7 @@ Kraken uses properties files to store sensitive data such as passwords or API ke
 
 ### Generate properties file
 
-The properties files should be a manually created JSON file with the following structure and location in the root directory with the name *properties.json*
+The properties files should be a manually created JSON file with the following structure and location in the root directory with the name _properties.json_
 
 ```
 {
@@ -285,7 +286,7 @@ Scenario: As a user
 
 ### Specifying that your custom step uses Kraken properties
 
-If you specify new steps for web or mobile and require them to use Kraken properties functionality you should use the Cucumber property *{kraken-string}* instead of *{string}* as shown in the following snippet:
+If you specify new steps for web or mobile and require them to use Kraken properties functionality you should use the Cucumber property _{kraken-string}_ instead of _{string}_ as shown in the following snippet:
 
 ```
 When('I navigate to page {kraken-string}', async function (page) {
@@ -317,7 +318,7 @@ Scenario: As a user
 
 ### Specifying that your custom step uses Kraken faker
 
-If you specify new steps for web or mobile and require them to use Kraken faker functionality you should use the Cucumber property *{kraken-string}* instead of *{string}* as shown in the following snippet:
+If you specify new steps for web or mobile and require them to use Kraken faker functionality you should use the Cucumber property _{kraken-string}_ instead of _{string}_ as shown in the following snippet:
 
 ```
 When('I navigate to page {kraken-string}', async function (page) {

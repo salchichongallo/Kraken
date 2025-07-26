@@ -13,7 +13,9 @@ export class WebProcess extends DeviceProcess {
     args.push('--require');
     args.push(`${process.cwd()}/features/web/*/*.js`);
     args.push('--require');
-    args.push(FileHelper.instance().pathToAbsolutePath(`${__dirname}/../steps/web.js`));
-    this.runWithArgs(args)
+    args.push(
+      FileHelper.instance().pathToAbsolutePath(`${__dirname}/../steps/web.js`),
+    );
+    this.runWithArgs(args);
   }
 }

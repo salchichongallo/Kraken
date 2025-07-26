@@ -1,10 +1,10 @@
-import { FileHelper } from "./FileHelper";
+import { FileHelper } from './FileHelper';
 import * as Constants from '../utils/Constants';
 
 export class PropertyManager {
   private static singletonInstance: PropertyManager;
 
-  constructor() { }
+  constructor() {}
 
   public static instance(): PropertyManager {
     if (!PropertyManager.singletonInstance) {
@@ -14,7 +14,7 @@ export class PropertyManager {
   }
 
   static stringIsAProperty(string: String): boolean {
-    return string.startsWith("<") && string.endsWith(">");
+    return string.startsWith('<') && string.endsWith('>');
   }
 
   getProperty(property: string) {
@@ -32,7 +32,9 @@ export class PropertyManager {
       throw new Error(`ERROR: There is no ${Constants.PROPERTIES_PATH} file.`);
     }
 
-    let fileContent = FileHelper.instance().contentOfFile(Constants.PROPERTIES_PATH);
+    let fileContent = FileHelper.instance().contentOfFile(
+      Constants.PROPERTIES_PATH,
+    );
     return JSON.parse(fileContent);
   }
 }

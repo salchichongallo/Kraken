@@ -11,7 +11,8 @@
     "start": "ts-node src/test.ts",
     "example": "ts-node example/index.ts",
     "cucumber": "cucumber-js ./example",
-    "build": "tsc -p ."
+    "build": "tsc -p .",
+    "format": "prettier -w ."
   },
   "keywords": [],
   "author": "",
@@ -28,6 +29,7 @@
   },
   "devDependencies": {
     "@types/ejs": "^3.0.7",
-    "@types/fs-extra": "^9.0.11"
+    "@types/fs-extra": "^9.0.11",
+    "prettier": "3.6.2"
   }
 }

@@ -15,10 +15,10 @@ export abstract class Device {
   }
 
   toString(): string {
-    return `${this.id}${Constants.SEPARATOR}${this.model}${Constants.SEPARATOR}${this.constructor.name}`
+    return `${this.id}${Constants.SEPARATOR}${this.model}${Constants.SEPARATOR}${this.constructor.name}`;
   }
 
-  abstract screenSize(): { height: number, width: number };
+  abstract screenSize(): { height: number; width: number };
   abstract sdkVersion(): number;
   abstract orientation(): number;
 }

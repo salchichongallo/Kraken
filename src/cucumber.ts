@@ -5,7 +5,7 @@ exports.default = async function run() {
   const cli = new Cli({
     argv: process.argv.slice(2),
     cwd,
-    stdout: process.stdout
+    stdout: process.stdout,
   });
 
   let result;
