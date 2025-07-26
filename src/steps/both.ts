@@ -63,12 +63,22 @@ When(
 
 AfterStep(async function (this: any, world: any) {
   try {
-    let screenshot = await this.driver.saveScreenshot(
-      `./reports/${this.testScenarioId}/screenshots/${Math.round(+new Date() / 1000)}.png`,
-    );
-    this.attach(screenshot, 'image/png');
-  } catch {
-    console.log('KRAKEN: Could not take screenshot');
+    const screenshotPath = `./reports/${this.testScenarioId}/screenshots`;
+    const timestamp = Math.round(+new Date() / 1000);
+
+    const fs = require("fs");
+    const path = require("path");
+    if (!fs.existsSync(screenshotPath)) {
+      fs.mkdirSync(screenshotPath, { recursive: true });
+    }
+
+    const screenshotBuffer = await this.driver.takeScreenshot();
+    const filePath = path.join(screenshotPath, `${timestamp}.png`);
+    fs.writeFileSync(filePath, screenshotBuffer, "base64");
+
+    this.attach(fs.readFileSync(filePath), 'image/png');
+  } catch (error) {
+    console.log('KRAKEN: Could not take screenshot', error);
   }
-  return;
 });
+

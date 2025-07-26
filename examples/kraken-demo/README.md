@@ -33,3 +33,9 @@ Defina las variables de entorno `CI=1` y `ONLY_WEB=1` durante el pipeline para e
 ```sh
 CI=1 ONLY_WEB=1 npm run test
 ```
+
+Puede activar el nuevo reporter pasando la variable de entorno `NEW_REPORTER=1`
+
+```sh
+CI=1 ONLY_WEB=1 NEW_REPORTER=1 npm run test
+```

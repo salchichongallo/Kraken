@@ -33,17 +33,12 @@ export abstract class DeviceProcess implements DeviceProcessInterface {
   protected baseArgs(): string[] {
     return [
       `${__dirname}/../../bin/cucumber`,
-      '-f',
-      'pretty',
-      '-f',
-      `json:${Constants.REPORT_PATH}/${this.testScenario.executionId}/${this.device.id}/${Constants.FILE_REPORT_NAME}`,
+      '-f', 'pretty',
+      '-f', `json:${Constants.REPORT_PATH}/${this.testScenario.executionId}/${this.device.id}/${Constants.FILE_REPORT_NAME}`,
       `${this.testScenario.featureFile.filePath}`,
-      '--tags',
-      `@user${this.id}`,
-      '--world-parameters',
-      this.worldParams(),
-      '--require',
-      FileHelper.instance().pathToAbsolutePath(`${__dirname}/../steps/both.js`),
+      '--tags', `@user${this.id}`,
+      '--world-parameters', this.worldParams(),
+      '--require', FileHelper.instance().pathToAbsolutePath(`${__dirname}/../steps/both.js`)
     ];
   }
 
